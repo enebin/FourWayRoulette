@@ -9,13 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        VerticalRouletteView(
+            items: (0..<50).map { Item(description: "Item \($0)") }
+        )
+        .onSelected { item in
+            print(item)
         }
-        .padding()
+    }
+    
+    struct Item: RoulettableItem {
+        let id = UUID()
+        let description: String
     }
 }
 
