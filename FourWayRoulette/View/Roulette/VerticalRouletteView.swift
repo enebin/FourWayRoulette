@@ -30,6 +30,11 @@ struct VerticalRouletteView<Item>: View where Item: RoulettableItem {
                         rowItem(
                             item: items[index],
                             isSelected: index == selectedIndex)
+                        .onTapGesture {
+                            withAnimation(scrollAnimation) {
+                                proxy.scrollTo(index, anchor: .center)
+                            }
+                        }
                         .id(index)
                     }
                 }
@@ -44,9 +49,9 @@ struct VerticalRouletteView<Item>: View where Item: RoulettableItem {
                 onSelected?(items[selectedIndex])
             }
             .onScrollPhaseChange { oldPhase, newPhase in
+                // Snap to selected index
                 if newPhase == .idle {
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        // Snap to selected index
+                    withAnimation(scrollAnimation) {
                         proxy.scrollTo(selectedIndex, anchor: .center)
                     }
                 }
@@ -65,6 +70,10 @@ extension VerticalRouletteView {
 }
 
 private extension VerticalRouletteView {
+    var scrollAnimation: Animation {
+        .easeInOut(duration: 0.1)
+    }
+    
     func rowItem(item: Item, isSelected: Bool) -> some View {
         Text(item.description)
             .frame(height: itemHeight)
