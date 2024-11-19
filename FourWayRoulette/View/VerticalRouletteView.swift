@@ -1,17 +1,16 @@
 //
-//  FourWayRouletteView.swift
+//  VerticalRouletteView.swift
 //  FourWayRoulette
 //
-//  Created by Kai Lee on 11/15/24.
+//  Created by Kai Lee on 11/19/24.
 //
+
 
 import SwiftUI
 
-struct FourWayRouletteView<Item>: View where Item: VerticalViewItem {
+struct VerticalRouletteView<Item>: View where Item: RoulettableViewItem {
     
     @State private var selectedIndex: Int = 0
-    @State private var isCurrentIndexLongPressed = false
-    @State private var task: Task<Void, Never>? = nil
 
     private let itemHeight: CGFloat
     private let items: [Item]
@@ -33,33 +32,15 @@ struct FourWayRouletteView<Item>: View where Item: VerticalViewItem {
                 LazyVStack(spacing: 0) {
                     ForEach(items.indices, id: \.self) { index in
                         VStack {
-                            if index == selectedIndex && isCurrentIndexLongPressed {
-                                rowItem(
-                                    item: items[index],
-                                    index: index,
-                                    isSelected: index == selectedIndex)
-                                
-                                HorizontalRouletteView(items: items[index].horizontalItems)
-                                    .frame(height: itemHeight)
-                            } else {
-                                rowItem(
-                                    item: items[index],
-                                    index: index,
-                                    isSelected: index == selectedIndex)
-                            }
+                            rowItem(
+                                item: items[index],
+                                index: index,
+                                isSelected: index == selectedIndex)
                         }
                         .onTapGesture {
                             withAnimation(scrollAnimation) {
                                 proxy.scrollTo(index, anchor: .center)
                             }
-                        }
-                        .onLongPressGesture {
-                            if index != selectedIndex {
-                                withAnimation(scrollAnimation) {
-                                    proxy.scrollTo(index, anchor: .center)
-                                }
-                            }
-                            isCurrentIndexLongPressed = true
                         }
                         .id(index)
                     }
@@ -84,19 +65,14 @@ struct FourWayRouletteView<Item>: View where Item: VerticalViewItem {
                     withAnimation(scrollAnimation) {
                         proxy.scrollTo(selectedIndex, anchor: .center)
                     }
-                    startDelayedAction()
-                } else if newPhase == .interacting {
-                    isCurrentIndexLongPressed = false
-                    cancelTask()
                 }
             }
-            .frame(height: isCurrentIndexLongPressed ? itemHeight * 4 : itemHeight * 3)
-            .animation(.spring(duration: 0.2), value: isCurrentIndexLongPressed)
+            .frame(height: itemHeight * 3)
         }
     }
 }
 
-extension FourWayRouletteView {
+extension VerticalRouletteView {
     func onSelected(_ action: @escaping (Item) -> Void) -> Self {
         var copy = self
         copy.onSelected = action
@@ -104,7 +80,7 @@ extension FourWayRouletteView {
     }
 }
 
-private extension FourWayRouletteView {
+private extension VerticalRouletteView {
     var scrollAnimation: Animation {
         .easeInOut(duration: 0.1)
     }
@@ -113,27 +89,5 @@ private extension FourWayRouletteView {
         return item.content(index: index, isSelected: isSelected)
             .frame(height: itemHeight)
             .frame(maxWidth: .infinity)
-    }
-    
-    func startDelayedAction() {
-        // Cancel any existing task
-        task?.cancel()
-
-        task = Task {
-            do {
-                try await Task.sleep(for: .seconds(1))
-                guard !Task.isCancelled else {
-                    isCurrentIndexLongPressed = true
-                    return
-                }
-                isCurrentIndexLongPressed = true
-            } catch {
-                isCurrentIndexLongPressed = false
-            }
-        }
-    }
-
-    func cancelTask() {
-        task?.cancel()
     }
 }

@@ -17,12 +17,7 @@ struct ContentView: View {
         }
     }
     
-    struct Item: RoulettableItem {
-        let id = UUID()
-        let description: String
-    }
-    
-    struct VerticalItem: VerticalViewItem {
+    struct VerticalItem: FourWayRoulettableViewItem {
         let id = UUID()
         let horizontalItems: [HorizontalViewItem] = [
             HorizontalViewItem(),
@@ -49,6 +44,7 @@ struct ContentView: View {
         
         func content(index: Int, isSelected: Bool) -> some View {
             Text("Item \(index)")
+                .font(.caption)
                 .scaleEffect(isSelected ? 1.2 : 1.0)
                 .opacity(isSelected ? 1.0 : 0.5)
                 .animation(.easeInOut(duration: 0.1), value: isSelected)
