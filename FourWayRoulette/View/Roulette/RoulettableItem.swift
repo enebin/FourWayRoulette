@@ -12,6 +12,12 @@ protocol RoulettableItem: Identifiable {
 import SwiftUI
 protocol RoulettableViewItem: Identifiable {
     associatedtype Content: View
-//    var content: (Int) -> Content { get } // equal to `(itemIndex) -> some View`
+    
     func content(index: Int, isSelected: Bool) -> Content
+}
+
+protocol VerticalViewItem: RoulettableViewItem {
+    associatedtype HorizontalItem: RoulettableViewItem
+
+    var horizontalItems: [HorizontalItem] { get }
 }

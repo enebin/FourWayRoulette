@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HorizontalRouletteView<Item>: View where Item: RoulettableItem {
+struct HorizontalRouletteView<Item>: View where Item: RoulettableViewItem {
 
     @State private var selectedIndex: Int = 0
     
@@ -32,6 +32,7 @@ struct HorizontalRouletteView<Item>: View where Item: RoulettableItem {
                     ForEach(items.indices, id: \.self) { index in
                         rowItem(
                             item: items[index],
+                            index: index,
                             isSelected: index == selectedIndex)
                         .id(index)
                     }
@@ -77,13 +78,9 @@ private extension HorizontalRouletteView {
         Spacer().frame(width: itemWidth)
     }
     
-    func rowItem(item: Item, isSelected: Bool) -> some View {
-        Text(item.description)
+    func rowItem(item: Item, index: Int, isSelected: Bool) -> some View {
+        return item.content(index: index, isSelected: isSelected)
             .frame(width: itemWidth)
-            .frame(maxHeight: .infinity)
-            .font(.caption)
-            .scaleEffect(isSelected ? 1.2 : 1.0)
-            .opacity(isSelected ? 1.0 : 0.5)
-            .animation(.easeInOut(duration: 0.1), value: isSelected)
+            .frame(maxWidth: .infinity)
     }
 }

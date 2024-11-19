@@ -1,5 +1,5 @@
 //
-//  VerticalRouletteView.swift
+//  FourWayRouletteView.swift
 //  FourWayRoulette
 //
 //  Created by Kai Lee on 11/15/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct VerticalRouletteView<Item>: View where Item: RoulettableViewItem {
+struct FourWayRouletteView<Item>: View where Item: VerticalViewItem {
     
     @State private var selectedIndex: Int = 0
     @State private var isCurrentIndexLongPressed = false
@@ -39,15 +39,8 @@ struct VerticalRouletteView<Item>: View where Item: RoulettableViewItem {
                                     index: index,
                                     isSelected: index == selectedIndex)
                                 
-                                HorizontalRouletteView(items: [
-                                    ContentView.Item(description: "Long Pressed"),
-                                    ContentView.Item(description: "Long Pressed"),
-                                    ContentView.Item(description: "Long Pressed"),
-                                    ContentView.Item(description: "Long Pressed"),
-                                    ContentView.Item(description: "Long Pressed"),
-                                    ContentView.Item(description: "Long Pressed")
-                                ])
-                                .frame(height: itemHeight)
+                                HorizontalRouletteView(items: items[index].horizontalItems)
+                                    .frame(height: itemHeight)
                             } else {
                                 rowItem(
                                     item: items[index],
@@ -103,7 +96,7 @@ struct VerticalRouletteView<Item>: View where Item: RoulettableViewItem {
     }
 }
 
-extension VerticalRouletteView {
+extension FourWayRouletteView {
     func onSelected(_ action: @escaping (Item) -> Void) -> Self {
         var copy = self
         copy.onSelected = action
@@ -111,7 +104,7 @@ extension VerticalRouletteView {
     }
 }
 
-private extension VerticalRouletteView {
+private extension FourWayRouletteView {
     var scrollAnimation: Animation {
         .easeInOut(duration: 0.1)
     }
